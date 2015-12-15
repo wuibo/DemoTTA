@@ -9,4 +9,7 @@
     <string name="new_test">Nuevo Test</string>
     <string name="new_exercise">Nuevo Ejercicio</string>
     <string name="stadistics">Seguimiento</string>
+    <string name="title_activity_test">TestActivity</string>
+    <string name="button_send">Enviar</string>
+    <string name="button_help">Ver ayuda</string>
 </resources>
