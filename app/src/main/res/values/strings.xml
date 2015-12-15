@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Demo</string>
+    <string name="title_activity_menu">MenuActivity</string>
+    <string name="user_label">Usuario</string>
+    <string name="user_hint">Introduce DNI</string>
+    <string name="passwd_label">Contraseña</string>
+    <string name="passwd_hint">Introduce password</string>
+    <string name="login_button">Acceder</string>
+    <string name="new_test">Nuevo Test</string>
+    <string name="new_exercise">Nuevo Ejercicio</string>
+    <string name="stadistics">Seguimiento</string>
+</resources>
