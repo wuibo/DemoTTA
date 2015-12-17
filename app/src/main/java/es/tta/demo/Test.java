@@ -35,9 +35,7 @@ public class Test {
             correct=Correct;
         }
 
-        protected String getWording(){
-            return wording;
-        }
+        protected String getWording(){ return wording;  }
 
         protected boolean isCorrect(){
             return correct;

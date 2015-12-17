@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="es.tta.demo.ExerciseActivity">
+
+    <TextView
+        android:id="@+id/exercise_wording"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/button_send_file"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exercise_send_file"
+        android:onClick="sendFile"/>
+
+    <Button
+        android:id="@+id/button_send_foto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exercise_send_foto"
+        android:onClick="sendFoto"/>
+
+    <Button
+        android:id="@+id/button_send_audio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exercise_send_audio"
+        android:onClick="sendAudio"/>
+
+    <Button
+        android:id="@+id/button_send_video"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/exercise_send_video"
+        android:onClick="sendVideo"/>
+
+</LinearLayout>

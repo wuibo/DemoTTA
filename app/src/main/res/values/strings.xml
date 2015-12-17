@@ -12,4 +12,9 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="button_send">Enviar</string>
     <string name="button_help">Ver ayuda</string>
+    <string name="title_activity_exercise">ExerciseActivity</string>
+    <string name="exercise_send_file">Subir Fichero</string>
+    <string name="exercise_send_foto">Sacar Foto</string>
+    <string name="exercise_send_audio">Grabar Audio</string>
+    <string name="exercise_send_video">Grabar Video</string>
 </resources>
