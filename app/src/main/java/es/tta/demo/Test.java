@@ -7,25 +7,47 @@ import android.view.View;
  */
 public class Test {
 
-    protected String getWording(){
-        return "¿Qué asignatura es esta?";
+    static public final short ADVISE_HTML = 0;
+    static public final short ADVISE_VIDEO = 1;
+    static public final short ADVISE_AUDIO = 2;
+
+    private String wording;
+    private Choice[] choices;
+    private String advise;
+    private short adviseType;
+
+    public Test(String Wording,String [] choicesWording,boolean [] choicesCorrect, String Advise, short Type){
+        wording = Wording;
+        advise = Advise;
+        adviseType = Type;
+        if(choicesWording.length == choicesCorrect.length){
+            choices = new Choice[choicesCorrect.length];
+            int i = 0;
+            for(String choice : choicesWording){
+                choices[i] = new Choice(choicesWording[i],choicesCorrect[i]);
+                i++;
+            }
+        }
     }
 
-    protected Choice[] getChoices(){
-        Choice [] choices = new Choice[4];
-        choices[0] = new Choice("Rendimiento",false);
-        choices[1] = new Choice("Desplieguie",false);
-        choices[2] = new Choice("TTA",true);
-        choices[3] = new Choice("Proyectos",false);
+    public String getWording(){
+        return wording;
+    }
 
+    public Choice[] getChoices(){
         return choices;
     }
 
-    protected String getAdvice(){
-        return "ayuda";
+    public String getAdvice(){
+        return advise;
     }
 
-    protected class Choice{
+    public short getAdviseType(){
+        return adviseType;
+    }
+
+
+    public class Choice{
 
         private String wording;
         private boolean correct;
@@ -35,9 +57,9 @@ public class Test {
             correct=Correct;
         }
 
-        protected String getWording(){ return wording;  }
+        public String getWording(){ return wording;  }
 
-        protected boolean isCorrect(){
+        public boolean isCorrect(){
             return correct;
         }
     }

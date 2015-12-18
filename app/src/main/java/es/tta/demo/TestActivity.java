@@ -1,20 +1,30 @@
 package es.tta.demo;
 
+import android.content.Intent;
 import android.graphics.Color;
+import android.view.KeyEvent;
+import android.widget.MediaController;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebView;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.VideoView;
+
+import java.io.IOException;
 
 public class TestActivity extends AppCompatActivity implements View.OnClickListener{
 
     private int correct;
     private String advise;
+    private short adviseType;
+    private LinearLayout layout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +50,8 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         advise=test.getAdvice();
+        adviseType = test.getAdviseType();
+        layout = (LinearLayout) findViewById(R.id.test_layout);
     }
 
     @Override
@@ -71,12 +83,69 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             Toast.makeText(getApplicationContext(),"¡Correcto!",Toast.LENGTH_SHORT).show();
     }
 
-    public void help(View view){
+    public void help(View view) throws IOException {
         view.setEnabled(false);
-        TextView help = new TextView(this);
-        help.setText(advise);
-        LinearLayout layout = (LinearLayout) findViewById(R.id.test_layout);
-        layout.addView(help);
+        switch(adviseType){
+            case Test.ADVISE_AUDIO:
+                showAudio();
+                break;
+            case Test.ADVISE_HTML:
+                showHtml();
+                break;
+            case Test.ADVISE_VIDEO:
+                showVideo();
+                break;
+        }
     }
 
+    private void showHtml(){
+        if (advise.substring(0, 10).contains("://")) {
+            Uri uri = Uri.parse(advise);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            startActivity(intent);
+        } else {
+            WebView web = new WebView(this);
+            web.loadData(advise, "text/html", null);
+            web.setBackgroundColor(Color.TRANSPARENT);
+            web.setLayerType(WebView.LAYER_TYPE_SOFTWARE, null);
+            layout.addView(web);
+        }
+    }
+
+    private void showVideo(){
+        VideoView video = new VideoView(this);
+        video.setVideoURI(Uri.parse(advise));
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        video.setLayoutParams(params);
+
+        MediaController controller = new MediaController(this){
+            @Override
+            public void hide(){}
+
+            @Override
+            public boolean dispatchKeyEvent(KeyEvent event){
+                if(event.getKeyCode() == KeyEvent.KEYCODE_BACK)
+                    finish();
+                return super.dispatchKeyEvent(event);
+            }
+        };
+        controller.setAnchorView(video);
+        video.setMediaController(controller);
+        layout.addView(video);
+        video.start();
+    }
+
+    private void showAudio() throws IOException {
+        View view = new View(this);
+        AudioPlayer audio = new AudioPlayer(view);
+        audio.setAudioUri(Uri.parse(advise));
+        ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        view.setLayoutParams(params);
+
+        layout.addView(view);
+        audio.start();
+    }
 }
+
