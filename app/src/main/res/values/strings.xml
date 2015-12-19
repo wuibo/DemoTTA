@@ -17,4 +17,7 @@
     <string name="exercise_send_foto">Sacar Foto</string>
     <string name="exercise_send_audio">Grabar Audio</string>
     <string name="exercise_send_video">Grabar Video</string>
+    <string name="no_camera">No hay cámara en el dispositvo</string>
+    <string name="no_micro">No hay micrófono en el dispositvo</string>
+    <string name="no_app">No hay aplicaciones en el dispositivo para ello</string>
 </resources>
