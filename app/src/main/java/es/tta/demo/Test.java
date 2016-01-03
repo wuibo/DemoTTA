@@ -7,24 +7,20 @@ import android.view.View;
  */
 public class Test {
 
-    static public final short ADVISE_HTML = 0;
-    static public final short ADVISE_VIDEO = 1;
-    static public final short ADVISE_AUDIO = 2;
+    static public final String ADVISE_HTML = "text/html";
+    static public final String ADVISE_VIDEO = "video/mp4";
+    static public final String ADVISE_AUDIO = "audio/mpeg";
 
     private String wording;
     private Choice[] choices;
-    private String advise;
-    private short adviseType;
 
-    public Test(String Wording,String [] choicesWording,boolean [] choicesCorrect, String Advise, short Type){
+    public Test(String Wording,int [] choicesId, String [] choicesWording,boolean [] choicesCorrect, String [] choicesAdvise, String [] choicesAdviseType){
         wording = Wording;
-        advise = Advise;
-        adviseType = Type;
         if(choicesWording.length == choicesCorrect.length){
             choices = new Choice[choicesCorrect.length];
             int i = 0;
             for(String choice : choicesWording){
-                choices[i] = new Choice(choicesWording[i],choicesCorrect[i]);
+                choices[i] = new Choice(choicesId[i],choicesWording[i],choicesCorrect[i],choicesAdvise[i],choicesAdviseType[i]);
                 i++;
             }
         }
@@ -34,33 +30,39 @@ public class Test {
         return wording;
     }
 
-    public Choice[] getChoices(){
-        return choices;
-    }
+    public Choice[] getChoices(){ return choices; }
 
-    public String getAdvice(){
-        return advise;
-    }
-
-    public short getAdviseType(){
-        return adviseType;
+    public Choice getChoice(int i){
+        return choices[i];
     }
 
 
     public class Choice{
 
+        private int id;
         private String wording;
         private boolean correct;
+        private String advise;
+        private String adviseType;
 
-        public Choice(String Swording, boolean Correct){
-            wording=Swording;
-            correct=Correct;
+        public Choice(int id, String wording,boolean correct, String advise, String adviseType){
+            this.id = id;
+            this.wording = wording;
+            this.correct = correct;
+            this.advise = advise;
+            this.adviseType = adviseType;
         }
 
-        public String getWording(){ return wording;  }
+        public int getId(){ return id; }
+
+        public String getWording(){ return wording; }
 
         public boolean isCorrect(){
             return correct;
         }
+
+        public String getAdvise() { return advise; }
+
+        public String getAdviseType() { return adviseType; }
     }
 }

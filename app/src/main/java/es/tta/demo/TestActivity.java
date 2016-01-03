@@ -16,41 +16,62 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.VideoView;
+import android.util.Log;
 
 import java.io.IOException;
 
 public class TestActivity extends AppCompatActivity implements View.OnClickListener{
 
     private int correct;
-    private String advise;
-    private short adviseType;
     private LinearLayout layout;
+    Test test;
+    String advise;
+    String adviseType;
+    private View.OnClickListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-
+        listener = this;
+        final RadioGroup group = (RadioGroup) findViewById(R.id.test_choices);
+        final TextView textWording = (TextView) findViewById(R.id.test_wording);
         /*Fill the question*/
-        Data data = new Data();
-        Test test = data.getTest();
-        TextView textWording = (TextView) findViewById(R.id.test_wording);
-        textWording.setText(test.getWording());
-        RadioGroup group = (RadioGroup) findViewById(R.id.test_choices);
-        int i = 0;
-        for(Test.Choice choice : test.getChoices()){
-            RadioButton radio = new RadioButton(this);
-            radio.setText(choice.getWording());
-            radio.setOnClickListener(this);
-            group.addView(radio);
-            if(choice.isCorrect()){
-                correct = i;
-            }
-            i++;
-        }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Data data = new Data();
+                try {
+                    test = data.getTest(1);
+                    textWording.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            textWording.setText(test.getWording());
+                        }
+                    });
 
-        advise=test.getAdvice();
-        adviseType = test.getAdviseType();
+                    int i = 0;
+                    for (Test.Choice choice : test.getChoices()) {
+                        final RadioButton radio = new RadioButton(getApplicationContext());
+                        radio.setText(choice.getWording());
+                        radio.setOnClickListener(listener);
+                        radio.setTextColor(Color.BLACK);
+                        group.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                group.addView(radio);
+                            }
+                        });
+                        if (choice.isCorrect()) {
+                            correct = i;
+                        }
+                        i++;
+                    }
+                }catch(Exception e){
+                    Log.e("demo",e.getMessage(),e);
+                }
+            }
+        }).start();
         layout = (LinearLayout) findViewById(R.id.test_layout);
     }
 
@@ -76,6 +97,8 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         if(selected != correct){
             group.getChildAt(selected).setBackgroundColor(Color.RED);
             Toast.makeText(getApplicationContext(), "¡Has fallado!", Toast.LENGTH_SHORT).show();
+            advise = test.getChoice(selected).getAdvise();
+            adviseType = test.getChoice(selected).getAdviseType();
             if(advise != null && !advise.isEmpty()){
                 findViewById(R.id.button_view_advice).setVisibility(View.VISIBLE);
             }

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,15 +23,32 @@ public class ExerciseActivity extends AppCompatActivity {
     final private int VIDEO_REQUEST_CODE=1;
     final private int AUDIO_REQUEST_CODE=2;
     final private int PICTURE_REQUEST_CODE=3;
-
+    private Exercise exercise;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
 
-        Intent intent = getIntent();
-        TextView textExercise = (TextView) findViewById(R.id.exercise_wording);
-        textExercise.setText(intent.getStringExtra(MenuActivity.EXTRA_EXERCISE));
+        /*Cargar el ejercicio*/
+        final Data data = new Data();
+        new Thread(new Runnable() {
+            final TextView tv = (TextView) findViewById(R.id.exercise_wording);
+            @Override
+            public void run() {
+                try{
+                    exercise=data.getExercise(1);
+                    tv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            tv.setText(exercise.getWording());
+                        }
+                    });
+                }catch(Exception e){
+                    Log.e("demo", e.getMessage(), e);
+                }
+            }
+        }).start();
+
         /*comprobar todos los dispositivos y eliminar los que no tiene el movil*/
         View view;
         if(!getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
@@ -69,7 +87,9 @@ public class ExerciseActivity extends AppCompatActivity {
                     pictureURI = Uri.fromFile(file);
                     intent.putExtra(MediaStore.EXTRA_OUTPUT,pictureURI);
                     startActivityForResult(intent,PICTURE_REQUEST_CODE);
-                }catch (IOException e){}
+                }catch (IOException e){
+                    Log.e("demo",e.getMessage(),e);
+                }
             }else{
                 /*No hay aplicación para capturar imagen*/
                 Toast.makeText(getApplicationContext(),R.string.no_app,Toast.LENGTH_SHORT).show();
