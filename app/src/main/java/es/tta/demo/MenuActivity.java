@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 public class MenuActivity extends AppCompatActivity {
 
-    public final static String EXTRA_EXERCISE = "es.tta.demo.exercie";
+    private UserStatus user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,20 +18,22 @@ public class MenuActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         TextView textLogin = (TextView)findViewById(R.id.menu_login);
-        textLogin.setText("Bienvenido "+intent.getStringExtra(MainActivity.EXTRA_LOGIN));
+        user = (UserStatus) intent.getSerializableExtra(MainActivity.EXTRA_USER);
+        textLogin.setText("Bienvenido "+user.getUser());
         TextView textLection = (TextView) findViewById(R.id.menu_lection);
-        textLection.setText("Lección 1");   //como meter en código string
+        textLection.setText("Lección "+user.getLesson());
     }
 
     public void test (View view){
         Intent intent = new Intent(this,TestActivity.class);
+        intent.putExtra(MainActivity.EXTRA_USER,user);
         startActivity(intent);
     }
 
     public void exercise (View view){
         Intent intent = new Intent(this,ExerciseActivity.class);
-        intent.putExtra(EXTRA_EXERCISE,"Esto es un ejercicio");
-        startActivity(intent);
+        intent.putExtra(MainActivity.EXTRA_USER,user);
+                startActivity(intent);
     }
 
     public void stadistics (View view){

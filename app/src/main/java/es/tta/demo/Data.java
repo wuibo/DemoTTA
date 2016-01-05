@@ -1,20 +1,24 @@
 package es.tta.demo;
 
+import android.net.Uri;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Random;
+import java.io.InputStream;
+import java.net.URL;
 
 /**
  * Created by ainhoa on 15/12/2015.
  */
 public class Data {
     RestClient rest;
-    public Data(){
+    public Data(String user, String passwd){
         rest = new RestClient("http://u017633.ehu.eus:18080/AlumnoTta/rest/tta");
-        rest.setHttpBasicAuth("12345678A","tta");
+        rest.setHttpBasicAuth(user, passwd);
     }
 
     public Test getTest(int id) throws IOException, JSONException{
@@ -47,6 +51,26 @@ public class Data {
         JSONObject json = rest.getJson(String.format("getExercise?id=%d",id));
         Exercise exercise = new Exercise(json.getInt("id"),json.getString("wording"));
         return exercise;
+    }
+
+    public UserStatus getStatus(String dni,String pss) throws IOException, JSONException{
+        JSONObject json = rest.getJson(String.format("getStatus?dni=%s",dni));
+        UserStatus user = new UserStatus(json.getInt("id"),json.getString("user"),json.getInt("lessonNumber"),
+                json.getString("lessonTitle"),json.getInt("nextTest"),json.getInt("nextExercise"),dni,pss);
+        return user;
+    }
+
+    public int postTest(int user, int choice)throws IOException, JSONException{
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("userId",user);
+        jsonObject.put("choiceId",choice);
+        return rest.postJson(jsonObject,"postChoice");
+    }
+
+    public int postExercise(Uri uri, int user, int exercise,String name)throws IOException{
+        InputStream is = new FileInputStream(uri.getPath());
+        String path = "postExercise?user="+user+"&id="+exercise;
+        return rest.postFile(path,is,name);
     }
 
 }

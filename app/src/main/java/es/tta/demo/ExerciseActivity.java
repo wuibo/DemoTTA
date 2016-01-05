@@ -14,7 +14,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ExerciseActivity extends AppCompatActivity {
 
@@ -24,13 +26,18 @@ public class ExerciseActivity extends AppCompatActivity {
     final private int AUDIO_REQUEST_CODE=2;
     final private int PICTURE_REQUEST_CODE=3;
     private Exercise exercise;
+    private UserStatus user;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_exercise);
 
+        Intent intent = getIntent();
+        user = (UserStatus) intent.getSerializableExtra(MainActivity.EXTRA_USER);
+
         /*Cargar el ejercicio*/
-        final Data data = new Data();
+        final Data data = new Data(user.getUser_dni(),user.getUser_pss());
         new Thread(new Runnable() {
             final TextView tv = (TextView) findViewById(R.id.exercise_wording);
             @Override
@@ -81,7 +88,8 @@ public class ExerciseActivity extends AppCompatActivity {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             if(intent.resolveActivity(getPackageManager())!=null){
                 /*Hay aplicación para capturar imagen*/
-                File dir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+                File dir = Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_PICTURES);
                 try {
                     File file = File.createTempFile("tta", ".jpg", dir);
                     pictureURI = Uri.fromFile(file);
@@ -151,7 +159,26 @@ public class ExerciseActivity extends AppCompatActivity {
         }
     }
 
-    private void sendFile(Uri uri){
-        Toast.makeText(getApplicationContext(),"enviar el fichero",Toast.LENGTH_SHORT).show();
-    }
+    private void sendFile(final Uri uri){
+        final Data data = new Data(user.getUser_dni(),user.getUser_pss());
+        File f = new File(uri.getPath());
+        final String name = f.getName();
+        final View view = findViewById(R.id.exercise_wording);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    data.postExercise(uri,user.getId(),user.getNextExercise(),name);
+                }catch (Exception e){
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), R.string.upload_error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    Log.e("demo", e.getMessage(), e);
+                }
+            }
+        }).start();
+            }
 }

@@ -20,4 +20,7 @@
     <string name="no_camera">No hay cámara en el dispositvo</string>
     <string name="no_micro">No hay micrófono en el dispositvo</string>
     <string name="no_app">No hay aplicaciones en el dispositivo para ello</string>
+    <string name="bad_dni">Introduzca un formato correcto de DNI</string>
+    <string name="server_error">Error reciviendo respuesta del servidor</string>
+    <string name="upload_error">Error enviando respuesta</string>
 </resources>

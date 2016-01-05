@@ -24,15 +24,20 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
 
     private int correct;
     private LinearLayout layout;
-    Test test;
-    String advise;
-    String adviseType;
+    private Test test;
+    private String advise;
+    private String adviseType;
+    private UserStatus user;
     private View.OnClickListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+
+        Intent intent = getIntent();
+        user = (UserStatus) intent.getSerializableExtra(MainActivity.EXTRA_USER);
+
         listener = this;
         final RadioGroup group = (RadioGroup) findViewById(R.id.test_choices);
         final TextView textWording = (TextView) findViewById(R.id.test_wording);
@@ -40,7 +45,7 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Data data = new Data();
+                Data data = new Data(user.getUser_dni(),user.getUser_pss());
                 try {
                     test = data.getTest(1);
                     textWording.post(new Runnable() {
@@ -80,11 +85,11 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.button_send_test).setVisibility(View.VISIBLE);
     }
 
-    public void send (View view){
+    public void send (final View view){
         RadioGroup group = (RadioGroup) findViewById(R.id.test_choices);
         int selectedID = group.getCheckedRadioButtonId();
         View radioButton = group.findViewById(selectedID);
-        int selected = group.indexOfChild(radioButton);
+        final int selected = group.indexOfChild(radioButton);
 
         int choices = group.getChildCount();
         for (int i=0; i < choices; i++){
@@ -104,6 +109,25 @@ public class TestActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else
             Toast.makeText(getApplicationContext(),"¡Correcto!",Toast.LENGTH_SHORT).show();
+
+        /*Envio al servidor*/
+        final Data data = new Data(user.getUser_dni(),user.getUser_pss());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try{
+                    data.postTest(user.getId(),selected);
+                }catch(Exception e){
+                    view.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), R.string.upload_error, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    Log.e("demo", e.getMessage(), e);
+                }
+            }
+        }).start();
     }
 
     public void help(View view) throws IOException {

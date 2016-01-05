@@ -5,13 +5,14 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
 
-    public final static String EXTRA_LOGIN = "es.tta.demo.login";
-    public final static String EXTRA_PASSWD = "es.tta.demo.passwd";
+    public final static String EXTRA_USER = "es.tta.demo.user";
 
     private NetworkReceiver receiver;
 
@@ -26,13 +27,44 @@ public class MainActivity extends AppCompatActivity {
         this.registerReceiver(receiver,filter);
     }
 
-    public void login (View view){
-        Intent intent = new Intent(this,MenuActivity.class);
+    public void login (final View view){
+        final Intent intent = new Intent(this,MenuActivity.class);
         EditText editLogin = (EditText) findViewById(R.id.login);
         EditText editPasswd = (EditText) findViewById(R.id.passwd);
-        intent.putExtra(EXTRA_LOGIN,editLogin.getText().toString());
-        intent.putExtra(EXTRA_PASSWD,editPasswd.getText().toString());
-        startActivity(intent);
+        /*verificar que el DNI sigue el formato indicado*/
+        final String pss = editPasswd.getText().toString();
+        final String dni = editLogin.getText().toString();
+        if(dni.matches("[0-9]{8}[A-Z]")){
+            /*Obtener los datos de usuario*/
+            final Data data = new Data(dni,pss);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    UserStatus user=null;
+                    try{
+                        user = data.getStatus(dni,pss);
+                    }catch(Exception e){
+                        Log.e("demo", e.getMessage(), e);
+                    }finally {
+                        if(user!=null){
+                            intent.putExtra(EXTRA_USER,user);
+                            view.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    startActivity(intent);
+                                }
+                            });
+                        }else{
+                            Toast.makeText(getApplicationContext(),R.string.server_error,
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+            }).start();
+        }else{
+            Toast.makeText(getApplicationContext(),R.string.bad_dni,Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override
